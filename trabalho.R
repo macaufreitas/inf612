@@ -79,6 +79,35 @@ get_daily_avg <- function(acc_values) {
     return(daily_avg_result)
 }
 
+#
+# Return a data.frame with monthly averages
+#
+get_monthly_avg <- function(dataframe) {
+  avg_temp = c()
+  avg_wind = c()
+  avg_humid = c()
+  avg_sensat = c()
+  
+  for(month in months) {
+    avg_temp <- c(avg_temp, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Temperatura)))
+    avg_wind <- c(avg_wind, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Vento)))
+    avg_humid <- c(avg_humid, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Umidade)))
+    avg_sensat <- c(avg_sensat, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Sensacao)))
+  }
+  
+  monthly_avg_data <- data.frame(months, avg_temp, avg_wind, avg_humid, avg_sensat)
+  
+  return(monthly_avg_data)
+}
+
+
+#
+# Plot graph of monthly average temperature
+#
+graph_monthly_avg_temp <- function(df) {
+  plot(df$months ~ df$avg_temp, col = "red", main = "Temperature x Months", xlab = "Temperature", ylab = "Months")
+}
+
 
 
 #
@@ -91,32 +120,6 @@ graph_temp_VS_sensat <- function(dataset, query_day = "2014-07-01") {
   plot(day_data$Sensacao ~ day_data$Temperatura, col = "red", main = graph_title, xlab = "Temperature", ylab = "Sensation")
 }
 
-#
-# Plot graph of Temperature X Humidity
-#
-graph_temp_VS_humid <- function(dataset, query_day = "2014-07-01") {
-  day_data <- cepagri_data[substring(cepagri_data[[1]], 1, 10) == query_day, ]
-
-  graph_title <- paste("Temperature X Humidity ->", query_day)
-  plot(day_data$Umidade ~ day_data$Temperatura, col = "red", main = graph_title, xlab = "Temperature", ylab = "Humidity")
-}
-
-#
-# Plot graph of Humidity X Sensation
-#
-graph_humid_VS_sensat <- function(dataset, query_day = "2014-07-01") {
-  day_data <- cepagri_data[substring(cepagri_data[[1]], 1, 10) == query_day, ]
-
-  graph_title <- paste("Humidity X Sensation ->", query_day)
-  plot(day_data$Sensacao ~ day_data$Umidade, col = "red", main = graph_title, xlab = "Humidity", ylab = "Sensation")
-}
-
-#
-# Plot graph of monthly average temperature
-#
-graph_monthly_avg_temp <- function(dataset) {
-  # TODO
-}
 
 
 #
@@ -143,5 +146,8 @@ cepagri_data <- cepagri_data[cepagri_data[[TEMP_IDX]] != " [ERRO]",]
 dates <- unique(substring(cepagri_data[[TIME_IDX]], 1, 10))
 months <- unique(substring(cepagri_data[[TIME_IDX]], 1, 7))
 
-mytest <- get_daily_accumulated(cepagri_data)
-mytest2 <- get_daily_avg(mytest)
+# Adding month column on the data.frame
+cepagri_data$Mes <- substring(cepagri_data[[1]], 1, 7)
+
+#mytest <- get_daily_accumulated(cepagri_data)
+#mytest2 <- get_daily_avg(mytest)
