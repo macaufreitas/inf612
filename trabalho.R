@@ -80,33 +80,55 @@ get_daily_avg <- function(acc_values) {
 }
 
 #
-# Return a data.frame with monthly averages
+# Return a data.frame with monthly data
 #
-get_monthly_avg <- function(dataframe) {
-  avg_temp = c()
-  avg_wind = c()
-  avg_humid = c()
-  avg_sensat = c()
+get_monthly_data <- function(dataframe) {
+  avg_temp = c() ; avg_wind = c() ; avg_humid = c()
+  avg_sensat = c() ; max_temp = c() ; min_temp = c() 
   
   for(month in months) {
     avg_temp <- c(avg_temp, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Temperatura)))
     avg_wind <- c(avg_wind, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Vento)))
     avg_humid <- c(avg_humid, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Umidade)))
     avg_sensat <- c(avg_sensat, mean(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Sensacao)))
+    max_temp <- c(max_temp, max(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Temperatura)))
+    min_temp <- c(min_temp, min(as.numeric(cepagri_data[cepagri_data$Mes == month, ]$Temperatura)))
   }
   
-  monthly_avg_data <- data.frame(months, avg_temp, avg_wind, avg_humid, avg_sensat)
+  monthly_avg_data <- data.frame(months, avg_temp, avg_wind, avg_humid, avg_sensat, max_temp, min_temp)
   
   return(monthly_avg_data)
 }
 
 
 #
-# Plot graph of monthly average temperature
+# Plot graph of monthly average temperatures
 #
 graph_monthly_avg_temp <- function(df) {
-  plot(df$months ~ df$avg_temp, col = "red", main = "Temperature x Months", xlab = "Temperature", ylab = "Months")
+  g_range <- c(10, 30)
+  plot(df$avg_temp, type="o", col="blue", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
+  axis(1, at=1:12, lab=as.character(df$months), las=2)
+  axis(2, las=1, at=2*0:g_range[2])
+  title(main="Monthly average temperature", col.main="blue", font.main=4)
+  title(ylab="Temperatures", col.lab=rgb(0,0.5,0))
 }
+
+
+#
+# Plot graph of monthly average , max and min temperatures
+#
+graph_monthly_avg_max_min_temp <- function(df) {
+  g_range <- c(0, 56)
+  plot(df$avg_temp, type="o", col="green", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
+  lines(df$max_temp, type="o", col="red", pch=22)
+  lines(df$min_temp, type="o", col="blue", pch=23)
+  axis(1, at=1:12, lab=as.character(df$months), las=2)
+  axis(2, at=2*0:g_range[2], las=1)
+  title(main="Monthly temperatures", col.main="blue", font.main=4)
+  title(ylab="Temperatures", col.lab=rgb(0,0.5,0))
+  legend("topleft", g_range[2], c("Max","Average", "Min"), cex=0.8, col=c("red","green", "blue"), pch=c(22, 21, 23), lty=1:1)
+}
+
 
 
 
@@ -151,3 +173,9 @@ cepagri_data$Mes <- substring(cepagri_data[[1]], 1, 7)
 
 #mytest <- get_daily_accumulated(cepagri_data)
 #mytest2 <- get_daily_avg(mytest)
+
+monthly_data <- get_monthly_data(cepagri_data)
+
+# Plotting the graphs
+graph_monthly_avg_temp(monthly_data)
+graph_monthly_avg_max_min_temp(monthly_data)
