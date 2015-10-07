@@ -79,6 +79,46 @@ get_daily_avg <- function(acc_values) {
     return(daily_avg_result)
 }
 
+
+
+#
+# Plot graph of Temperature X Sensation
+#
+graph_temp_VS_sensat <- function(dataset, query_day = "2014-07-01") {
+  day_data <- cepagri_data[substring(cepagri_data[[1]], 1, 10) == query_day, ]
+
+  graph_title <- paste("Temperature X Sensation ->", query_day)
+  plot(day_data$Sensacao ~ day_data$Temperatura, col = "red", main = graph_title, xlab = "Temperature", ylab = "Sensation")
+}
+
+#
+# Plot graph of Temperature X Humidity
+#
+graph_temp_VS_humid <- function(dataset, query_day = "2014-07-01") {
+  day_data <- cepagri_data[substring(cepagri_data[[1]], 1, 10) == query_day, ]
+
+  graph_title <- paste("Temperature X Humidity ->", query_day)
+  plot(day_data$Umidade ~ day_data$Temperatura, col = "red", main = graph_title, xlab = "Temperature", ylab = "Humidity")
+}
+
+#
+# Plot graph of Humidity X Sensation
+#
+graph_humid_VS_sensat <- function(dataset, query_day = "2014-07-01") {
+  day_data <- cepagri_data[substring(cepagri_data[[1]], 1, 10) == query_day, ]
+
+  graph_title <- paste("Humidity X Sensation ->", query_day)
+  plot(day_data$Sensacao ~ day_data$Umidade, col = "red", main = graph_title, xlab = "Humidity", ylab = "Sensation")
+}
+
+#
+# Plot graph of monthly average temperature
+#
+graph_monthly_avg_temp <- function(dataset) {
+  # TODO
+}
+
+
 #
 # Main Execution
 #
@@ -99,8 +139,9 @@ cepagri_data <- cepagri_data[(cepagri_data[[1]] <= MAX_DATE),]
 # Delete all entries that have missing data
 cepagri_data <- cepagri_data[cepagri_data[[TEMP_IDX]] != " [ERRO]",]
 
-# List with all days between defined dates
+# List with all days and months between defined dates
 dates <- unique(substring(cepagri_data[[TIME_IDX]], 1, 10))
+months <- unique(substring(cepagri_data[[TIME_IDX]], 1, 7))
 
 mytest <- get_daily_accumulated(cepagri_data)
 mytest2 <- get_daily_avg(mytest)
