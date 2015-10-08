@@ -118,7 +118,7 @@ graph_monthly_avg_temp <- function(df) {
 # Plot graph of monthly average , max and min temperatures
 #
 graph_monthly_avg_max_min_temp <- function(df) {
-  g_range <- c(0, 56)
+  g_range <- c(0, 40)
   plot(df$avg_temp, type="o", col="green", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
   lines(df$max_temp, type="o", col="red", pch=22)
   lines(df$min_temp, type="o", col="blue", pch=23)
@@ -126,7 +126,7 @@ graph_monthly_avg_max_min_temp <- function(df) {
   axis(2, at=2*0:g_range[2], las=1)
   title(main="Monthly temperatures", col.main="blue", font.main=4)
   title(ylab="Temperatures", col.lab=rgb(0,0.5,0))
-  legend("topleft", g_range[2], c("Max","Average", "Min"), cex=0.8, col=c("red","green", "blue"), pch=c(22, 21, 23), lty=1:1)
+  legend("topright", g_range[2], c("Max","Average", "Min"), col=c("red","green", "blue"), pch=c(22, 21, 23), cex=0.8)
 }
 
 
