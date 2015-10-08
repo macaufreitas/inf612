@@ -133,13 +133,29 @@ graph_monthly_avg_max_min_temp <- function(df) {
 
 
 #
-# Plot graph of Temperature X Sensation
+# Plot graph of Humidity X Temperature X Sensation
 #
-graph_temp_VS_sensat <- function(dataset, query_day = "2014-07-01") {
-  day_data <- cepagri_data[substring(cepagri_data[[1]], 1, 10) == query_day, ]
+graph_temp_VS_sensat <- function(df, query_day = "2014-07-01") {
+  day_data <- df[substring(df[[1]], 1, 10) == query_day, ]
 
-  graph_title <- paste("Temperature X Sensation ->", query_day)
-  plot(day_data$Sensacao ~ day_data$Temperatura, col = "red", main = graph_title, xlab = "Temperature", ylab = "Sensation")
+  green <- rgb(0,0.5,0)
+  
+  g_range <- c(0, 30)
+  plot(day_data$Temperatura, type="l", col="red", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
+  lines(day_data$Sensacao, type="l", col="blue")
+  #axis(1, at=1:12, lab=as.character(day_data), las=2)
+  axis(2, at=2*0:g_range[2], las=1)
+  
+  par(new=TRUE)
+  
+  plot(day_data$Umidade, type="l", col=green, xlab="", ylab="", ylim=c(0,100), axes=FALSE)
+  mtext("Humidity",side=4,col=green,line=10) 
+  axis(4, ylim=c(0,100), col=green,col.axis=green,las=1)
+  
+  title(main="Humidity x Temperature x Sensation", col.main="blue", font.main=4)
+  title(ylab="Temperatures", col.lab=green)
+  legend("topleft", g_range[2], c("Humidity","Temperature", "Sensation"), cex=0.8, col=c(green, "red", "blue"), lty=1:1)  
+
 }
 
 
@@ -179,3 +195,4 @@ monthly_data <- get_monthly_data(cepagri_data)
 # Plotting the graphs
 graph_monthly_avg_temp(monthly_data)
 graph_monthly_avg_max_min_temp(monthly_data)
+graph_temp_VS_sensat(cepagri_data, "2014-07-01")
