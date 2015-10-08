@@ -84,9 +84,8 @@ graph_monthly_avg_sensat <- function(df) {
   title(ylab="Sensacao Termica [°C]", col.lab=rgb(0,0.5,0))
 }
 
-#
+
 # Plot graph of monthly average , max and min temperatures
-#
 graph_monthly_avg_max_min_temp <- function(df) {
   g_range <- c(0, 40)
   plot(df$avg_temp, type="o", col="green", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
@@ -100,11 +99,7 @@ graph_monthly_avg_max_min_temp <- function(df) {
 }
 
 
-
-
-#
 # Plot graph of Humidity X Temperature X Sensation
-#
 graph_temp_VS_sensat <- function(df, query_day = "2014-07-01") {
   day_data <- df[substring(df[[1]], 1, 10) == query_day, ]
 
@@ -127,7 +122,6 @@ graph_temp_VS_sensat <- function(df, query_day = "2014-07-01") {
   legend("topleft", g_range[2], c("Umidade","Temperatura", "Sensacao"), cex=0.8, col=c(green, "red", "blue"), lty=1:1)  
 
 }
-
 
 
 #
@@ -157,9 +151,8 @@ months <- unique(substring(cepagri_data[[TIME_IDX]], 1, 7))
 # Adding month column on the data.frame
 cepagri_data$Mes <- substring(cepagri_data[[1]], 1, 7)
 
-#mytest <- get_daily_accumulated(cepagri_data)
-#mytest2 <- get_daily_avg(mytest)
 
+# Generate the data for the graphs
 monthly_data <- get_monthly_data(cepagri_data)
 
 # Plotting the graphs
