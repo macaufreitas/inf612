@@ -20,66 +20,6 @@ ERROR_MGS <- " [ERRO]"
 
 
 #
-# Functions
-#
-get_daily_accumulated <- function(dataset) {
-    k <- 1
-    count_measures <- 0
-    daily_temp <- 0
-    daily_wind <- 0
-    daily_humidity <- 0
-    daily_sensation <- 0
-    measures_daily <- list()
-    for(i in 1:nrow(dataset)) {
-        current_day <- dates[k]
-        day_i <- substring(dataset[[TIME_IDX]][i], 1, 10)
-        if(current_day == day_i) {
-            daily_temp <- daily_temp + as.numeric(dataset[[TEMP_IDX]][i])
-            daily_wind <- daily_wind + as.numeric(dataset[[WIND_IDX]][i])
-            daily_humidity <- daily_humidity + as.numeric(dataset[[HUMIDITY_IDX]][i])
-            daily_sensation <- daily_sensation + as.numeric(dataset[[SENSATION_IDX]][i])
-            count_measures <- count_measures + 1
-        }
-        else {
-            measures_daily[[current_day]] <- list(temp = daily_temp, wind = daily_wind,
-                                                  humidity = daily_humidity, n_measures = count_measures,
-                                                  sensation = daily_sensation)
-            count_measures <- 0
-            daily_temp <- 0
-            daily_wind <- 0
-            daily_humidity <- 0
-            daily_sensation <- 0
-            k <- k + 1 # go to the next day
-            i <- i - 1 # make the loop go back one iteraction
-        }
-    }
-
-    return(measures_daily)
-}
-
-# TODO: finish this function trying to use apply functions for lists
-get_daily_avg <- function(acc_values) {
-    daily_avg_result <- list()
-    dates_list <- names(acc_values)
-    temp_list <- sapply(acc_values, "[[", "temp")
-    wind_list <- sapply(acc_values, "[[", "wind")
-    humidity_list <- sapply(acc_values, "[[", "humidity")
-    nmeasures_list <- sapply(acc_values, "[[", "n_measures")
-    sensation_list <- sapply(acc_values, "[[", "sensation")
-
-    for(i in 1:length(acc_values)) {
-        temp_avg <- temp_list[i] / nmeasures_list[i]
-        wind_avg <- wind_list[i] / nmeasures_list[i]
-        humidity_avg <- humidity_list[i] / nmeasures_list[i]
-        sensation_avg <- sensation_list[i] / nmeasures_list[i]
-        daily_avg_result[[dates_list[i]]] <- list(Temperatura = temp_avg, Vento = wind_avg,
-                                                Humidade = humidity_avg, Sensacao = sensation_avg)
-    }
-
-    return(daily_avg_result)
-}
-
-#
 # Return a data.frame with monthly data
 #
 get_monthly_data <- function(dataframe) {
@@ -101,18 +41,48 @@ get_monthly_data <- function(dataframe) {
 }
 
 
-#
 # Plot graph of monthly average temperatures
-#
 graph_monthly_avg_temp <- function(df) {
   g_range <- c(10, 30)
   plot(df$avg_temp, type="o", col="blue", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
   axis(1, at=1:12, lab=as.character(df$months), las=2)
   axis(2, las=1, at=2*0:g_range[2])
-  title(main="Monthly average temperature", col.main="blue", font.main=4)
-  title(ylab="Temperatures", col.lab=rgb(0,0.5,0))
+  title(main="Temperatura Media Mensal", col.main="blue", font.main=4)
+  title(ylab="Temperaturas [°C]", col.lab=rgb(0,0.5,0))
 }
 
+
+# Plot graph of monthly average wind speed
+graph_monthly_avg_wind <- function(df) {
+  g_range <- c(10, 40)
+  plot(df$avg_wind, type="o", col="green", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
+  axis(1, at=1:12, lab=as.character(df$months), las=2)
+  axis(2, las=1, at=2*0:g_range[2])
+  title(main="Velocidade do Vento Media Mensal", col.main="Blue", font.main=4)
+  title(ylab="Velocidade do Vento [Km/h]", col.lab=rgb(0,0.5,0))
+}
+
+
+# Plot graph of monthly average humidity
+graph_monthly_avg_humid <- function(df) {
+  g_range <- c(40, 100)
+  plot(df$avg_humid, type="o", col="blue", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
+  axis(1, at=1:12, lab=as.character(df$months), las=2)
+  axis(2, las=1, at=2*0:g_range[2])
+  title(main="Umidade Media Mensal", col.main="Blue", font.main=4)
+  title(ylab="Umidade", col.lab=rgb(0,0.5,0))
+}
+
+
+# Plot graph of monthly average termal sensation
+graph_monthly_avg_sensat <- function(df) {
+  g_range <- c(10, 40)
+  plot(df$avg_sensat, type="o", col="blue", ylim=g_range, axes=FALSE, ann=FALSE) ; box()
+  axis(1, at=1:12, lab=as.character(df$months), las=2)
+  axis(2, las=1, at=2*0:g_range[2])
+  title(main="Sensacao Termica Media Mensal", col.main="Blue", font.main=4)
+  title(ylab="Sensacao Termica [°C]", col.lab=rgb(0,0.5,0))
+}
 
 #
 # Plot graph of monthly average , max and min temperatures
@@ -124,9 +94,9 @@ graph_monthly_avg_max_min_temp <- function(df) {
   lines(df$min_temp, type="o", col="blue", pch=23)
   axis(1, at=1:12, lab=as.character(df$months), las=2)
   axis(2, at=2*0:g_range[2], las=1)
-  title(main="Monthly temperatures", col.main="blue", font.main=4)
-  title(ylab="Temperatures", col.lab=rgb(0,0.5,0))
-  legend("topright", g_range[2], c("Max","Average", "Min"), col=c("red","green", "blue"), pch=c(22, 21, 23), cex=0.8)
+  title(main="Temperaturas Mensais", col.main="blue", font.main=4)
+  title(ylab="Temperaturas [°C]", col.lab=rgb(0,0.5,0))
+  legend("topright", g_range[2], c("Maxima","Media", "Minima"), col=c("red","green", "blue"), pch=c(22, 21, 23), cex=0.8)
 }
 
 
@@ -152,9 +122,9 @@ graph_temp_VS_sensat <- function(df, query_day = "2014-07-01") {
   mtext("Humidity",side=4,col=green,line=10) 
   axis(4, ylim=c(0,100), col=green,col.axis=green,las=1)
   
-  title(main="Humidity x Temperature x Sensation", col.main="blue", font.main=4)
-  title(ylab="Temperatures", col.lab=green)
-  legend("topleft", g_range[2], c("Humidity","Temperature", "Sensation"), cex=0.8, col=c(green, "red", "blue"), lty=1:1)  
+  title(main="Umidade x Temperatura x Sensacao", col.main="blue", font.main=4)
+  title(ylab="Temperaturas [°C]", col.lab=green)
+  legend("topleft", g_range[2], c("Umidade","Temperatura", "Sensacao"), cex=0.8, col=c(green, "red", "blue"), lty=1:1)  
 
 }
 
@@ -194,5 +164,8 @@ monthly_data <- get_monthly_data(cepagri_data)
 
 # Plotting the graphs
 graph_monthly_avg_temp(monthly_data)
+graph_monthly_avg_wind(monthly_data)
+graph_monthly_avg_humid(monthly_data)
+graph_monthly_avg_sensat(monthly_data)
 graph_monthly_avg_max_min_temp(monthly_data)
 graph_temp_VS_sensat(cepagri_data, "2014-07-01")
